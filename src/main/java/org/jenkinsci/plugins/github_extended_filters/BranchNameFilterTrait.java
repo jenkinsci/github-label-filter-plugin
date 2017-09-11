@@ -25,47 +25,21 @@ package org.jenkinsci.plugins.github_extended_filters;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
-import hudson.util.FormValidation;
 import jenkins.scm.api.SCMHead;
-import jenkins.scm.api.SCMHeadCategory;
-import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.trait.SCMHeadFilter;
-import jenkins.scm.api.trait.SCMSourceContext;
 import jenkins.scm.api.trait.SCMSourceRequest;
-import jenkins.scm.api.trait.SCMSourceTrait;
-import jenkins.scm.api.trait.SCMSourceTraitDescriptor;
-import jenkins.scm.impl.ChangeRequestSCMHeadCategory;
 import jenkins.scm.impl.trait.Discovery;
 import org.jenkinsci.plugins.github_branch_source.BranchSCMHead;
-import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
-import org.jenkinsci.plugins.github_branch_source.GitHubSCMSourceContext;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSourceRequest;
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
 
 import java.io.IOException;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 /**
  * A {@link Discovery} trait for GitHub that will only select branches with name matching regex.
  *
  */
-public class BranchNameFilterTrait extends SCMSourceTrait {
-
-    private static final String DEFAULT_MATCH_ALL_REGEX = ".*";
-
-    /**
-     * The regex for filtering.
-     */
-    private String regex;
-
-    /**
-     * The pattern compiled from supplied regex
-     */
-    private transient Pattern pattern;
+public class BranchNameFilterTrait extends BaseGithubExtendedFilterTrait {
 
     /**
      * Constructor for stapler.
@@ -74,29 +48,10 @@ public class BranchNameFilterTrait extends SCMSourceTrait {
      */
     @DataBoundConstructor
     public BranchNameFilterTrait(String regex) {
-        this.regex = regex;
-        pattern = Pattern.compile(regex);
+        super(regex);
     }
 
-    /**
-     * Gets the regex
-     *
-     * @return the regex
-     */
-    public String getRegex() {
-        return regex;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void decorateContext(SCMSourceContext<?, ?> context) {
-        GitHubSCMSourceContext ctx = (GitHubSCMSourceContext) context;
-        ctx.withFilter(getScmHeadFilter());
-    }
-
-    private SCMHeadFilter getScmHeadFilter() {
+    protected SCMHeadFilter getScmHeadFilter() {
         SCMHeadFilter scmHeadFilter = new SCMHeadFilter() {
 
             @Override
@@ -109,7 +64,7 @@ public class BranchNameFilterTrait extends SCMSourceTrait {
                     if (!DEFAULT_MATCH_ALL_REGEX.equals(getRegex())) {
 
                         String branchName = branchSCMHead.getName();
-                        boolean found = pattern.matcher(branchName).matches();
+                        boolean found = getPattern().matcher(branchName).matches();
 
                         if (found) {
                             request.listener().getLogger().format("%n    Will Build branch %s.%n", branchName);
@@ -128,18 +83,9 @@ public class BranchNameFilterTrait extends SCMSourceTrait {
         return scmHeadFilter;
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean includeCategory(@NonNull SCMHeadCategory category) {
-        return category instanceof ChangeRequestSCMHeadCategory;
-    }
-
     @Extension
     @Discovery
-    public static class DescriptorImpl extends SCMSourceTraitDescriptor {
+    public static class DescriptorImpl extends BaseDescriptorImpl {
 
         /**
          * {@inheritDoc}
@@ -149,44 +95,6 @@ public class BranchNameFilterTrait extends SCMSourceTrait {
             return "Filter only branches by name";
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Class<? extends SCMSourceContext> getContextClass() {
-            return GitHubSCMSourceContext.class;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public Class<? extends SCMSource> getSourceClass() {
-            return GitHubSCMSource.class;
-        }
-
-        @Restricted(NoExternalUse.class)
-        public FormValidation doCheckRegex(@QueryParameter String value) {
-
-            FormValidation formValidation;
-            try {
-                if (value.trim().isEmpty()) {
-                    formValidation = FormValidation.error("Cannot have empty or blank regex.");
-                } else {
-                    Pattern.compile(value);
-                    formValidation = FormValidation.ok();
-                }
-
-                if (DEFAULT_MATCH_ALL_REGEX.equals(value)) {
-                    formValidation = FormValidation.warning("You should delete this trait instead of matching all");
-                }
-
-            } catch (PatternSyntaxException e) {
-                formValidation = FormValidation.error("Invalid Regex : " + e.getMessage());
-            }
-
-            return formValidation;
-        }
     }
 
 }
