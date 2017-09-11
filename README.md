@@ -1,5 +1,7 @@
-# Github PR label filter plugin
+# Github extended filters plugin
 
-This plugin enables Github Pull Requests to be filtered on the labels. User can specify a regex to match with pull request labels.
-A pull request will only be built if it has one of the matching labels else it won't be built. This is useful in scenarios where 
-there a lots of pull requests and not all are intended for CI
+This plugin adds more filters for Github organization and Github branch folders.
+It provides filters for
+ - Filtering pull requests by labels
+ - Filtering pull requests by titles
+ - Filtering only branches by name

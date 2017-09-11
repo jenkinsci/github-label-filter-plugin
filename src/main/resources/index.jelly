@@ -1,4 +1,7 @@
 <?jelly escape-by-default='true'?>
 <div>
-  This plugin filters github pull requests by label.
+  This plugin offers additional filters for Github organisation and branch source jobs. It allows user to
+  - Filter just branches by names with regex
+  - Filter just PRs by titles with regex
+  - Filter PRs by label with regex
 </div>
