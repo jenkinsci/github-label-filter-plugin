@@ -1,7 +1,8 @@
 <?jelly escape-by-default='true'?>
 <div>
-  This plugin offers additional filters for Github organisation and branch source jobs. It allows user to
-  - Filter just branches by names with regex
-  - Filter just PRs by titles with regex
-  - Filter PRs by label with regex
+  This plugin is a collection of traits for Github organization and Github branch folders.
+  It provides filters for
+  - Pull requests by labels
+  - Pull requests by titles
+  - Only branches by name (doesn't touch PRs)
 </div>

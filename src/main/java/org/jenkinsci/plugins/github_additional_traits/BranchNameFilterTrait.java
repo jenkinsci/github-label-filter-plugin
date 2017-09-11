@@ -21,36 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugins.github_extended_filters;
+package org.jenkinsci.plugins.github_additional_traits;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
-import hudson.console.HyperlinkNote;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.trait.SCMHeadFilter;
 import jenkins.scm.api.trait.SCMSourceRequest;
 import jenkins.scm.impl.trait.Discovery;
+import org.jenkinsci.plugins.github_branch_source.BranchSCMHead;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSourceRequest;
-import org.jenkinsci.plugins.github_branch_source.PullRequestSCMHead;
-import org.kohsuke.github.GHLabel;
-import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
 
 /**
- * A {@link Discovery} trait for GitHub that will only select pull requests that have specified label.
+ * A {@link Discovery} trait for GitHub that will only select branches with name matching regex.
  *
  */
-public class PullRequestLabelFilterTrait extends BaseGithubExtendedFilterTrait {
+public class BranchNameFilterTrait extends BaseGithubExtendedFilterTrait {
 
     /**
      * Constructor for stapler.
      *
-     * @param regex Label for filtering pull request labels
+     * @param regex Label for filtering
      */
     @DataBoundConstructor
-    public PullRequestLabelFilterTrait(String regex) {
+    public BranchNameFilterTrait(String regex) {
         super(regex);
     }
 
@@ -61,31 +58,21 @@ public class PullRequestLabelFilterTrait extends BaseGithubExtendedFilterTrait {
             public boolean isExcluded(@NonNull SCMSourceRequest request,
                                       @NonNull SCMHead head) throws IOException, InterruptedException {
 
-                if (request instanceof GitHubSCMSourceRequest && head instanceof PullRequestSCMHead) {
-                    GitHubSCMSourceRequest githubRequest = (GitHubSCMSourceRequest) request;
-                    PullRequestSCMHead pullRequestSCMHead = (PullRequestSCMHead) head;
+                if (request instanceof GitHubSCMSourceRequest && head instanceof BranchSCMHead) {
+                    BranchSCMHead branchSCMHead = (BranchSCMHead) head;
 
                     if (!DEFAULT_MATCH_ALL_REGEX.equals(getRegex())) {
-                        Iterable<GHPullRequest> ghPullRequests = githubRequest.getPullRequests();
-                        for (GHPullRequest ghPullRequest : ghPullRequests) {
-                            if (ghPullRequest.getNumber() == pullRequestSCMHead.getNumber()) {
-                                boolean foundLabel = false;
-                                StringBuilder allLabels = new StringBuilder();
-                                for (GHLabel label : ghPullRequest.getLabels()) {
-                                    allLabels.append(label.getName()).append(" ,");
-                                    if (getPattern().matcher(label.getName()).matches()) {
-                                        foundLabel = true;
-                                        request.listener().getLogger().format("%n    Will Build PR %s. Found matching label : %s%n", HyperlinkNote.encodeTo(ghPullRequest.getHtmlUrl().toString(), "#" + ghPullRequest.getNumber()), label.getName());
-                                        break;
-                                    }
-                                }
 
-                                if (!foundLabel) {
-                                    request.listener().getLogger().format("%n    Won't build PR %s. No matching label found. Labels Found : %s%n", HyperlinkNote.encodeTo(ghPullRequest.getHtmlUrl().toString(), "#" + ghPullRequest.getNumber()), allLabels.toString());
-                                }
-                                return !foundLabel;
-                            }
+                        String branchName = branchSCMHead.getName();
+                        boolean found = getPattern().matcher(branchName).matches();
+
+                        if (found) {
+                            request.listener().getLogger().format("%n    Will Build branch %s.%n", branchName);
+                        } else {
+                            request.listener().getLogger().format("%n    Won't build branch %s. name doesn't match filter.", branchName);
                         }
+                        return !found;
+
                     }
                 }
 
@@ -96,7 +83,6 @@ public class PullRequestLabelFilterTrait extends BaseGithubExtendedFilterTrait {
         return scmHeadFilter;
     }
 
-
     @Extension
     @Discovery
     public static class DescriptorImpl extends BaseDescriptorImpl {
@@ -106,7 +92,7 @@ public class PullRequestLabelFilterTrait extends BaseGithubExtendedFilterTrait {
          */
         @Override
         public String getDisplayName() {
-            return "Filter pull requests by label";
+            return "Filter only branches by name";
         }
 
     }

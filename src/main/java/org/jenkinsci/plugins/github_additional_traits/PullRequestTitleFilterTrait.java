@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.jenkinsci.plugins.github_extended_filters;
+package org.jenkinsci.plugins.github_additional_traits;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;

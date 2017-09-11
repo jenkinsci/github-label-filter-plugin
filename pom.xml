@@ -11,7 +11,7 @@
   </parent>
 
   <groupId>org.jenkins-ci.plugins</groupId>
-  <artifactId>github-extended-filters</artifactId>
+  <artifactId>github-additional-traits</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
@@ -22,9 +22,9 @@
     <github-branch-source.version>2.2.0</github-branch-source.version>
   </properties>
 
-  <name>Github extended filters plugin</name>
-  <description>Extended filters for Github branches and PRs based on labels and names</description>
-  <url>https://wiki.jenkins-ci.org/display/JENKINS/Github+extended+filters+plugin</url>
+  <name>Github additional traits plugin</name>
+  <description>Additional traits for Github branches and PRs based on labels and names</description>
+  <url>https://wiki.jenkins-ci.org/display/JENKINS/Github+additional+traits+plugin</url>
 
   <!-- The default licence for Jenkins OSS Plugins is MIT. Substitute for the applicable one if needed. -->
 
