@@ -55,6 +55,7 @@ public abstract class BaseGithubExtendedFilterTrait extends SCMSourceTrait {
      */
     private transient Pattern pattern;
 
+
     public BaseGithubExtendedFilterTrait(String regex) {
         this.regex = regex;
         pattern = Pattern.compile(regex);
@@ -70,6 +71,9 @@ public abstract class BaseGithubExtendedFilterTrait extends SCMSourceTrait {
     }
 
     protected Pattern getPattern() {
+        if (pattern == null) {
+            pattern = Pattern.compile(regex);
+        }
         return pattern;
     }
 
