@@ -106,8 +106,9 @@ public abstract class BaseGithubExtendedFilterTrait extends SCMSourceTrait {
 									.filter(ghPullRequest -> ghPullRequest.getNumber() == pullRequestSCMHead.getNumber())
 									.findFirst()
 									.map(ghPullRequest -> {
+										List<String> labels = Collections.emptyList();
 										try {
-											List<String> labels = ghPullRequest.getLabels().stream().map(GHLabel::getName)
+											labels = ghPullRequest.getLabels().stream().map(GHLabel::getName)
 													.collect(Collectors.toList());
 											if (labels.isEmpty()) {
 												githubRequest.listener().getLogger().format("%n  Found %s. has no labels %n", HyperlinkNote.encodeTo(ghPullRequest.getHtmlUrl().toString(), "#" + ghPullRequest.getNumber()));
@@ -116,10 +117,10 @@ public abstract class BaseGithubExtendedFilterTrait extends SCMSourceTrait {
 											}
 											return labels;
 										} catch (Exception e) {
-											return Collections.<String>emptyList();
+											return labels;
 										}
 									})
-									.orElse(Collections.<String>emptyList());
+									.orElse(Collections.emptyList());
 	}
 
 	public static abstract class BaseDescriptorImpl extends SCMSourceTraitDescriptor {
