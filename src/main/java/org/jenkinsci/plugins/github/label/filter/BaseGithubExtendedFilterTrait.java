@@ -48,15 +48,13 @@ import java.util.stream.StreamSupport;
 
 public abstract class BaseGithubExtendedFilterTrait extends SCMSourceTrait {
 
-	protected static final String DEFAULT_LABELS = "Default";
-
 	/**
-	 * The regex for filtering.
+	 * The labels for filtering.
 	 */
 	private String labels;
 
 	/**
-	 * The pattern compiled from supplied regex
+	 * The label lists from from supplied labels string
 	 */
 	private transient List<String> labelsAsList;
 
@@ -66,9 +64,9 @@ public abstract class BaseGithubExtendedFilterTrait extends SCMSourceTrait {
 	}
 
 	/**
-	 * Gets the regex
+	 * Gets the labels
 	 *
-	 * @return the regex
+	 * @return the labels
 	 */
 	public String getLabels() {
 		return labels;

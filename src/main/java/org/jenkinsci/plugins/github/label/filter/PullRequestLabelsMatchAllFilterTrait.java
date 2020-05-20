@@ -42,11 +42,9 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
- * A {@link Discovery} trait for GitHub that will only select pull requests that have specified label.
+ * A {@link Discovery} trait for GitHub that will only select pull requests matching all specified label.
  */
 public class PullRequestLabelsMatchAllFilterTrait extends BaseGithubExtendedFilterTrait {
-
-	private SCMHeadFilter scmHeadFilter;
 
 	/**
 	 * Constructor for stapler.
