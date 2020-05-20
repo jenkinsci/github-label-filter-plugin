@@ -1,7 +1,7 @@
-# Github additional traits plugin
+# Github pull requests filter by labels plugin
 
-This plugin is a collection of traits for Github organization and Github branch folders.
-It provides filters for
- - Pull requests by labels
- - Pull requests by titles
- - Only branches by name (doesn't touch PRs)
+This plugin is inspired by the [Github additional traits plugin](https://github.com/jenkinsci/github-additional-traits-plugin).
+It provides filters for:
+ - Filter pull requests by exactly matching all labels defined in the trait.
+ - Black pull requests by matching any labels defined in the trait.
+ 
