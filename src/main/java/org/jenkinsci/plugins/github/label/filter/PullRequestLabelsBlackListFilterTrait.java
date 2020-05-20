@@ -71,17 +71,17 @@ public class PullRequestLabelsBlackListFilterTrait extends BaseGithubExtendedFil
                         request.listener().getLogger().format("%n  Has no labels. Includes this pull request.%n");
                         return false;
                     }
-                    boolean isExcluded = foundLabels.stream()
+                    boolean containsAtLeastOne = foundLabels.stream()
                             .filter(blacklistLabels::contains)
                             .findFirst()
                             .map(any -> true)
                             .orElse(false);
-                    if (isExcluded) {
-                        request.listener().getLogger().format("%n  Contains the blacklist labels \"%s\". Skipped.%n", String.join(",", blacklistLabels));
+                    if (containsAtLeastOne) {
+                        request.listener().getLogger().format("%n  Contains at least one blacklist labels \"%s\". Skipped.%n", String.join(",", blacklistLabels));
                     } else {
-                        request.listener().getLogger().format("%n  Doesn't contain the blacklist labels \"%s\". Includes this pull request.%n", String.join(",", blacklistLabels));
+                        request.listener().getLogger().format("%n  Doesn't contain any blacklist labels \"%s\". Includes this pull request.%n", String.join(",", blacklistLabels));
                     }
-                    return isExcluded;
+                    return containsAtLeastOne;
 
                 }
                 return false;

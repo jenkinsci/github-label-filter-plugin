@@ -62,17 +62,17 @@ public class PullRequestLabelsMatchAnyFilterTrait extends BaseGithubExtendedFilt
                         request.listener().getLogger().format("%n  No labels are defined in the trait. Includes this pull request.%n");
                         return false;
                     }
-                    boolean shouldInclude = foundLabels.stream()
+                    boolean containsAtLeastOne = foundLabels.stream()
                             .filter(specifiedLabels::contains)
                             .findFirst()
                             .map(any -> true)
                             .orElse(false);
-                    if (!shouldInclude) {
-                        request.listener().getLogger().format("%n  Contains the required labels \"%s\". Skipped.%n", String.join(",", specifiedLabels));
+                    if (containsAtLeastOne) {
+                        request.listener().getLogger().format("%n  Contains at least one required labels \"%s\". Includes this pull request.%n", String.join(",", specifiedLabels));
                     } else {
-                        request.listener().getLogger().format("%n  Doesn't contain the required labels \"%s\". Includes this pull request.%n", String.join(",", specifiedLabels));
+                        request.listener().getLogger().format("%n  Doesn't contain any required labels \"%s\". Skipped.%n", String.join(",", specifiedLabels));
                     }
-                    return !shouldInclude;
+                    return !containsAtLeastOne;
 
                 }
                 return false;

@@ -70,9 +70,9 @@ public class PullRequestLabelsMatchAllFilterTrait extends BaseGithubExtendedFilt
 					}
 					boolean containsAll = foundLabels.containsAll(requiredLabels);
 					if (containsAll) {
-						request.listener().getLogger().format("%n  Contains the required labels \"%s\". Skipped.%n", String.join(",", requiredLabels));
+						request.listener().getLogger().format("%n  Contains all required labels \"%s\". Includes this pull request..%n", String.join(",", requiredLabels));
 					} else {
-						request.listener().getLogger().format("%n  Doesn't contain the required labels \"%s\". Includes this pull request.%n", String.join(",", requiredLabels));
+						request.listener().getLogger().format("%n  Doesn't contain all required labels \"%s\". Skipped %n", String.join(",", requiredLabels));
 					}
 					return !containsAll;
 
