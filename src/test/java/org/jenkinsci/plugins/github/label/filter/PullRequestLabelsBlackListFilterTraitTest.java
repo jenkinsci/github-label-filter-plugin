@@ -61,28 +61,33 @@ public class PullRequestLabelsBlackListFilterTraitTest {
     @Test
     public void testBlackListMatch() throws IOException, InterruptedException {
         when(ghPullRequest.getLabels()).thenReturn(Arrays.asList(ghLabel1, ghLabel2));
-        SCMHeadFilter scmHeadFilter = new PullRequestLabelsBlackListFilterTrait("label1,label3").getScmHeadFilter();
-        boolean isExcluded = scmHeadFilter.isExcluded(gitHubSCMSourceRequest, pullRequestSCMHead);
+        boolean isExcluded = filter("label1,label3").isExcluded(gitHubSCMSourceRequest, pullRequestSCMHead);
         assertThat(isExcluded).isTrue();
         Mockito.verify(logger, times(2)).format(any(),any());
     }
 
     @Test
-    public void testBlackListNotMatch() throws IOException, InterruptedException {
+    public void testBlackListNoMatch() throws IOException, InterruptedException {
         when(ghPullRequest.getLabels()).thenReturn(Arrays.asList(ghLabel1, ghLabel2));
-        SCMHeadFilter scmHeadFilter = new PullRequestLabelsBlackListFilterTrait("label3,label4").getScmHeadFilter();
-        boolean isExcluded = scmHeadFilter.isExcluded(gitHubSCMSourceRequest, pullRequestSCMHead);
+        boolean isExcluded = filter("label3,label4").isExcluded(gitHubSCMSourceRequest, pullRequestSCMHead);
         assertThat(isExcluded).isFalse();
         Mockito.verify(logger, times(2)).format(any(),any());
+    }
+
+    private PullRequestLabelsBlackListFilterTrait trait(String labels) {
+        return new PullRequestLabelsBlackListFilterTrait(labels);
     }
 
     @Test
     public void testBlackListPRNoLabel() throws IOException, InterruptedException {
         when(ghPullRequest.getLabels()).thenReturn(Collections.emptyList());
-        SCMHeadFilter scmHeadFilter = new PullRequestLabelsBlackListFilterTrait("label3,label4").getScmHeadFilter();
-        boolean isExcluded = scmHeadFilter.isExcluded(gitHubSCMSourceRequest, pullRequestSCMHead);
+        boolean isExcluded = filter("label3,label4").isExcluded(gitHubSCMSourceRequest, pullRequestSCMHead);
         assertThat(isExcluded).isFalse();
         Mockito.verify(logger, times(2)).format(any(),any());
     }
 
+
+    private SCMHeadFilter filter(String s) {
+        return new PullRequestLabelsBlackListFilterTrait(s).getScmHeadFilter();
+    }
 }

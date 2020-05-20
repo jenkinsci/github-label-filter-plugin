@@ -27,7 +27,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @RunWith(MockitoJUnitRunner.class)
 
-public class PullRequestLabelsMatchAllFilterTraitTest {
+public class PullRequestLabelsMatchAnyFilterTraitTest {
     @Mock
     GitHubSCMSourceRequest gitHubSCMSourceRequest;
     @Mock
@@ -44,7 +44,7 @@ public class PullRequestLabelsMatchAllFilterTraitTest {
     PrintStream logger;
     URL ghPullRequestUrl = new URL("http://github.com/own1/repo1/pull/1");
 
-    public PullRequestLabelsMatchAllFilterTraitTest() throws MalformedURLException {
+    public PullRequestLabelsMatchAnyFilterTraitTest() throws MalformedURLException {
     }
 
     @Before
@@ -72,7 +72,7 @@ public class PullRequestLabelsMatchAllFilterTraitTest {
     public void testMatchSome() throws IOException, InterruptedException {
         when(ghPullRequest.getLabels()).thenReturn(Arrays.asList(ghLabel1, ghLabel2));
         boolean isExcluded = filter("label1,label4").isExcluded(gitHubSCMSourceRequest, pullRequestSCMHead);
-        assertThat(isExcluded).isTrue();
+        assertThat(isExcluded).isFalse();
         Mockito.verify(logger, times(2)).format(any(),any());
     }
 
@@ -94,6 +94,6 @@ public class PullRequestLabelsMatchAllFilterTraitTest {
     }
 
     private SCMHeadFilter filter(String s) {
-        return new PullRequestLabelsMatchAllFilterTrait(s).getScmHeadFilter();
+        return new PullRequestLabelsMatchAnyFilterTrait(s).getScmHeadFilter();
     }
 }

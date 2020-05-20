@@ -25,25 +25,20 @@ package org.jenkinsci.plugins.github.label.filter;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
-import hudson.console.HyperlinkNote;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.trait.SCMHeadFilter;
 import jenkins.scm.api.trait.SCMSourceRequest;
 import jenkins.scm.impl.trait.Discovery;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSourceRequest;
 import org.jenkinsci.plugins.github_branch_source.PullRequestSCMHead;
-import org.kohsuke.github.GHLabel;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
- * A {@link Discovery} trait for GitHub that will blacklist pull requests matching any specified label.
+ * A {@link Discovery} trait for GitHub that will only select pull requests matching all specified label.
  */
-public class PullRequestLabelsBlackListFilterTrait extends BaseGithubExtendedFilterTrait {
+public class PullRequestLabelsMatchAnyFilterTrait extends BaseGithubExtendedFilterTrait {
 
     /**
      * Constructor for stapler.
@@ -51,7 +46,7 @@ public class PullRequestLabelsBlackListFilterTrait extends BaseGithubExtendedFil
      * @param labels Labels for filtering pull request labels
      */
     @DataBoundConstructor
-    public PullRequestLabelsBlackListFilterTrait(String labels) {
+    public PullRequestLabelsMatchAnyFilterTrait(String labels) {
         super(labels);
     }
 
@@ -62,26 +57,22 @@ public class PullRequestLabelsBlackListFilterTrait extends BaseGithubExtendedFil
             public boolean isExcluded(@NonNull SCMSourceRequest request, @NonNull SCMHead head) {
                 if (request instanceof GitHubSCMSourceRequest && head instanceof PullRequestSCMHead) {
                     List<String> foundLabels = getPullRequestLabels((GitHubSCMSourceRequest) request, (PullRequestSCMHead) head);
-                    List<String> blacklistLabels = getLabelsAsList();
-                    if (blacklistLabels.isEmpty()) {
+                    List<String> specifiedLabels = getLabelsAsList();
+                    if (specifiedLabels.isEmpty()) {
                         request.listener().getLogger().format("%n  No labels are defined in the trait. Includes this pull request.%n");
                         return false;
                     }
-                    if (foundLabels.isEmpty()) {
-                        request.listener().getLogger().format("%n  Has no labels. Includes this pull request.%n");
-                        return false;
-                    }
-                    boolean isExcluded = foundLabels.stream()
-                            .filter(blacklistLabels::contains)
+                    boolean shouldInclude = foundLabels.stream()
+                            .filter(specifiedLabels::contains)
                             .findFirst()
                             .map(any -> true)
                             .orElse(false);
-                    if (isExcluded) {
-                        request.listener().getLogger().format("%n  Contains the blacklist labels \"%s\". Skipped.%n", String.join(",", blacklistLabels));
+                    if (!shouldInclude) {
+                        request.listener().getLogger().format("%n  Contains the required labels \"%s\". Skipped.%n", String.join(",", specifiedLabels));
                     } else {
-                        request.listener().getLogger().format("%n  Doesn't contain the blacklist labels \"%s\". Includes this pull request.%n", String.join(",", blacklistLabels));
+                        request.listener().getLogger().format("%n  Doesn't contain the required labels \"%s\". Includes this pull request.%n", String.join(",", specifiedLabels));
                     }
-                    return isExcluded;
+                    return !shouldInclude;
 
                 }
                 return false;
@@ -100,7 +91,7 @@ public class PullRequestLabelsBlackListFilterTrait extends BaseGithubExtendedFil
          */
         @Override
         public String getDisplayName() {
-            return "Filter pull requests OUT matching any labels";
+            return "Filter pull requests matching any labels";
         }
 
     }
