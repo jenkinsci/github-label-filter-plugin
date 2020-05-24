@@ -43,7 +43,7 @@ import java.util.stream.StreamSupport;
 /**
  * A {@link Discovery} trait for GitHub that will blacklist pull requests matching any specified label.
  */
-public class PullRequestLabelsBlackListFilterTrait extends BaseGithubExtendedFilterTrait {
+public class PullRequestLabelsBlackListFilterTrait extends BaseGithubExtendedFilterTrait implements LabelsFilter {
 
     /**
      * Constructor for stapler.
@@ -74,8 +74,7 @@ public class PullRequestLabelsBlackListFilterTrait extends BaseGithubExtendedFil
                     boolean containsAtLeastOne = foundLabels.stream()
                             .filter(blacklistLabels::contains)
                             .findFirst()
-                            .map(any -> true)
-                            .orElse(false);
+                            .isPresent();
                     if (containsAtLeastOne) {
                         request.listener().getLogger().format("%n  Contains at least one blacklist labels \"%s\". Skipped.%n", String.join(",", blacklistLabels));
                     } else {

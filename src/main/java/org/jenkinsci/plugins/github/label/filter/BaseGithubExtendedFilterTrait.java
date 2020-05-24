@@ -74,7 +74,7 @@ public abstract class BaseGithubExtendedFilterTrait extends SCMSourceTrait {
 
 	protected List<String> getLabelsAsList() {
 		if (labelsAsList == null) {
-			labelsAsList = Optional.ofNullable(labels)
+			labelsAsList = Optional.ofNullable(getLabels())
 					.map(labels -> labels.split("\\s*,\\s*"))
 					.map(Arrays::asList)
 					.orElse(Collections.emptyList());

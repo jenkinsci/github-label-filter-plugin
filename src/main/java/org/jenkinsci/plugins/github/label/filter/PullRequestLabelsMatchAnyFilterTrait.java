@@ -38,7 +38,7 @@ import java.util.List;
 /**
  * A {@link Discovery} trait for GitHub that will only select pull requests matching all specified label.
  */
-public class PullRequestLabelsMatchAnyFilterTrait extends BaseGithubExtendedFilterTrait {
+public class PullRequestLabelsMatchAnyFilterTrait extends BaseGithubExtendedFilterTrait implements LabelsFilter {
 
     /**
      * Constructor for stapler.
@@ -65,8 +65,7 @@ public class PullRequestLabelsMatchAnyFilterTrait extends BaseGithubExtendedFilt
                     boolean containsAtLeastOne = foundLabels.stream()
                             .filter(specifiedLabels::contains)
                             .findFirst()
-                            .map(any -> true)
-                            .orElse(false);
+                            .isPresent();
                     if (containsAtLeastOne) {
                         request.listener().getLogger().format("%n  Contains at least one required labels \"%s\". Includes this pull request.%n", String.join(",", specifiedLabels));
                     } else {
