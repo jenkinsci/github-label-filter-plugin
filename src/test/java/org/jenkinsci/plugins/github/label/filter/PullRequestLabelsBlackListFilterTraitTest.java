@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.github.label.filter;
 
 import hudson.model.TaskListener;
 import jenkins.scm.api.trait.SCMHeadFilter;
+import jenkins.scm.api.trait.SCMSourceRequest;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSourceRequest;
 import org.jenkinsci.plugins.github_branch_source.PullRequestSCMHead;
 import org.junit.Before;
@@ -86,6 +87,20 @@ public class PullRequestLabelsBlackListFilterTraitTest {
         Mockito.verify(logger, times(2)).format(any(),any());
     }
 
+    @Test
+    public void testEmptyInTrait() throws IOException, InterruptedException {
+        when(ghPullRequest.getLabels()).thenReturn(Collections.emptyList());
+        boolean isExcluded = filter("").isExcluded(gitHubSCMSourceRequest, pullRequestSCMHead);
+        assertThat(isExcluded).isFalse();
+        Mockito.verify(logger, times(2)).format(any(),any());
+    }
+
+    @Test
+    public void testNoGithub() throws IOException, InterruptedException {
+        boolean isExcluded = filter("").isExcluded(mock(SCMSourceRequest.class), pullRequestSCMHead);
+        assertThat(isExcluded).isFalse();
+        Mockito.verify(logger, times(0)).format(any(),any());
+    }
 
     private SCMHeadFilter filter(String s) {
         return new PullRequestLabelsBlackListFilterTrait(s).getScmHeadFilter();

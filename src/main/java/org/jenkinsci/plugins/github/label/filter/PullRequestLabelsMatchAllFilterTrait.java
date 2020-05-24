@@ -25,21 +25,15 @@ package org.jenkinsci.plugins.github.label.filter;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
-import hudson.console.HyperlinkNote;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.trait.SCMHeadFilter;
 import jenkins.scm.api.trait.SCMSourceRequest;
 import jenkins.scm.impl.trait.Discovery;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSourceRequest;
 import org.jenkinsci.plugins.github_branch_source.PullRequestSCMHead;
-import org.kohsuke.github.GHLabel;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * A {@link Discovery} trait for GitHub that will only select pull requests matching all specified label.
@@ -62,7 +56,7 @@ public class PullRequestLabelsMatchAllFilterTrait extends BaseGithubExtendedFilt
 			@Override
 			public boolean isExcluded(@NonNull SCMSourceRequest request, @NonNull SCMHead head) {
 				if (request instanceof GitHubSCMSourceRequest && head instanceof PullRequestSCMHead) {
-					List<String> foundLabels = getPullRequestLabels((GitHubSCMSourceRequest)request, (PullRequestSCMHead) head);
+					List<String> foundLabels = getPullRequestLabels((GitHubSCMSourceRequest) request, (PullRequestSCMHead) head);
 					List<String> requiredLabels = getLabelsAsList();
 					if (requiredLabels.isEmpty()) {
 						request.listener().getLogger().format("%n  No labels are defined in the trait. Includes this pull request.%n");

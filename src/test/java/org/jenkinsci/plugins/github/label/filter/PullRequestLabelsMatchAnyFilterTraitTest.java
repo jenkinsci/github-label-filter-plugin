@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.github.label.filter;
 
 import hudson.model.TaskListener;
 import jenkins.scm.api.trait.SCMHeadFilter;
+import jenkins.scm.api.trait.SCMSourceRequest;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSourceRequest;
 import org.jenkinsci.plugins.github_branch_source.PullRequestSCMHead;
 import org.junit.Before;
@@ -22,6 +23,7 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 
@@ -91,6 +93,21 @@ public class PullRequestLabelsMatchAnyFilterTraitTest {
         boolean isExcluded = filter("label3,label4").isExcluded(gitHubSCMSourceRequest, pullRequestSCMHead);
         assertThat(isExcluded).isTrue();
         Mockito.verify(logger, times(2)).format(any(),any());
+    }
+
+    @Test
+    public void testEmptyInTrait() throws IOException, InterruptedException {
+        when(ghPullRequest.getLabels()).thenReturn(Collections.emptyList());
+        boolean isExcluded = filter("").isExcluded(gitHubSCMSourceRequest, pullRequestSCMHead);
+        assertThat(isExcluded).isFalse();
+        Mockito.verify(logger, times(2)).format(any(),any());
+    }
+
+    @Test
+    public void testNoGithub() throws IOException, InterruptedException {
+        boolean isExcluded = filter("").isExcluded(mock(SCMSourceRequest.class), pullRequestSCMHead);
+        assertThat(isExcluded).isFalse();
+        Mockito.verify(logger, times(0)).format(any(),any());
     }
 
     private SCMHeadFilter filter(String s) {

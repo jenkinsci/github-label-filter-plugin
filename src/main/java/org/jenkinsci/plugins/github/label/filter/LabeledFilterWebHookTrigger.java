@@ -1,9 +1,9 @@
 package org.jenkinsci.plugins.github.label.filter;
 
 import hudson.Extension;
+import hudson.model.Item;
 import hudson.triggers.Trigger;
 import hudson.triggers.TriggerDescriptor;
-import hudson.model.Item;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -12,7 +12,6 @@ public class LabeledFilterWebHookTrigger extends Trigger {
 
 	@DataBoundConstructor
 	public LabeledFilterWebHookTrigger() {
-
 	}
 
 	/**

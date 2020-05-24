@@ -19,6 +19,7 @@ import org.kohsuke.github.GitHub;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -69,13 +70,16 @@ public class PullRequestGHEventSubscriber extends GHEventsSubscriber {
 			Matcher matcher = REPOSITORY_NAME_PATTERN.matcher(repoUrl);
 			if (matcher.matches()) {
 				final GitHubRepositoryName changedRepository = GitHubRepositoryName.create(repoUrl);
-				if (changedRepository == null) {
-					LOGGER.log(Level.WARNING, "Malformed repository URL {0}", repoUrl);
-					return;
-				}
-				if ("labeled".equals(action) || "unlabeled".equals(action)) {
-					triggerScan(changedRepository);
-				}
+				Optional.ofNullable(changedRepository)
+						.ifPresent(safeRepo -> {
+							if ("labeled".equals(action) || "unlabeled".equals(action)) {
+								triggerScan(safeRepo);
+							}
+						});
+			} else {
+				LOGGER.log(Level.WARNING, "Malformed repository URL {0}", repoUrl);
+				return;
+
 			}
 		} catch (IOException e) {
 			LogRecord lr = new LogRecord(Level.WARNING, "Could not parse {0} event from {1} with payload: {2}");
@@ -89,7 +93,6 @@ public class PullRequestGHEventSubscriber extends GHEventsSubscriber {
 		ACL.impersonate(ACL.SYSTEM, () -> {
 			Iterable<SCMSourceOwner> scmSourceOwners = SCMSourceOwners.all();
 			process(changedRepository, scmSourceOwners);
-
 		});
 	}
 

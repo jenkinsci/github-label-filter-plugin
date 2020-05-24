@@ -40,59 +40,59 @@ import java.util.List;
  */
 public class PullRequestLabelsMatchAnyFilterTrait extends BaseGithubExtendedFilterTrait implements LabelsFilter {
 
-    /**
-     * Constructor for stapler.
-     *
-     * @param labels Labels for filtering pull request labels
-     */
-    @DataBoundConstructor
-    public PullRequestLabelsMatchAnyFilterTrait(String labels) {
-        super(labels);
-    }
+	/**
+	 * Constructor for stapler.
+	 *
+	 * @param labels Labels for filtering pull request labels
+	 */
+	@DataBoundConstructor
+	public PullRequestLabelsMatchAnyFilterTrait(String labels) {
+		super(labels);
+	}
 
-    protected SCMHeadFilter getScmHeadFilter() {
-        SCMHeadFilter scmHeadFilter = new SCMHeadFilter() {
+	protected SCMHeadFilter getScmHeadFilter() {
+		SCMHeadFilter scmHeadFilter = new SCMHeadFilter() {
 
-            @Override
-            public boolean isExcluded(@NonNull SCMSourceRequest request, @NonNull SCMHead head) {
-                if (request instanceof GitHubSCMSourceRequest && head instanceof PullRequestSCMHead) {
-                    List<String> foundLabels = getPullRequestLabels((GitHubSCMSourceRequest) request, (PullRequestSCMHead) head);
-                    List<String> specifiedLabels = getLabelsAsList();
-                    if (specifiedLabels.isEmpty()) {
-                        request.listener().getLogger().format("%n  No labels are defined in the trait. Includes this pull request.%n");
-                        return false;
-                    }
-                    boolean containsAtLeastOne = foundLabels.stream()
-                            .filter(specifiedLabels::contains)
-                            .findFirst()
-                            .isPresent();
-                    if (containsAtLeastOne) {
-                        request.listener().getLogger().format("%n  Contains at least one required labels \"%s\". Includes this pull request.%n", String.join(",", specifiedLabels));
-                    } else {
-                        request.listener().getLogger().format("%n  Doesn't contain any required labels \"%s\". Skipped.%n", String.join(",", specifiedLabels));
-                    }
-                    return !containsAtLeastOne;
+			@Override
+			public boolean isExcluded(@NonNull SCMSourceRequest request, @NonNull SCMHead head) {
+				if (request instanceof GitHubSCMSourceRequest && head instanceof PullRequestSCMHead) {
+					List<String> foundLabels = getPullRequestLabels((GitHubSCMSourceRequest) request, (PullRequestSCMHead) head);
+					List<String> specifiedLabels = getLabelsAsList();
+					if (specifiedLabels.isEmpty()) {
+						request.listener().getLogger().format("%n  No labels are defined in the trait. Includes this pull request.%n");
+						return false;
+					}
+					boolean containsAtLeastOne = foundLabels.stream()
+							.filter(specifiedLabels::contains)
+							.findFirst()
+							.isPresent();
+					if (containsAtLeastOne) {
+						request.listener().getLogger().format("%n  Contains at least one required labels \"%s\". Includes this pull request.%n", String.join(",", specifiedLabels));
+					} else {
+						request.listener().getLogger().format("%n  Doesn't contain any required labels \"%s\". Skipped.%n", String.join(",", specifiedLabels));
+					}
+					return !containsAtLeastOne;
 
-                }
-                return false;
-            }
-        };
-        return scmHeadFilter;
-    }
+				}
+				return false;
+			}
+		};
+		return scmHeadFilter;
+	}
 
 
-    @Extension
-    @Discovery
-    public static class DescriptorImpl extends BaseDescriptorImpl {
+	@Extension
+	@Discovery
+	public static class DescriptorImpl extends BaseDescriptorImpl {
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String getDisplayName() {
-            return "Filter pull requests matching any labels";
-        }
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public String getDisplayName() {
+			return "Filter pull requests matching any labels";
+		}
 
-    }
+	}
 
 }

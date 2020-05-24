@@ -28,8 +28,12 @@ import hudson.console.HyperlinkNote;
 import hudson.util.FormValidation;
 import jenkins.scm.api.SCMHeadCategory;
 import jenkins.scm.api.SCMSource;
-import jenkins.scm.api.trait.*;
+import jenkins.scm.api.trait.SCMHeadFilter;
+import jenkins.scm.api.trait.SCMSourceContext;
+import jenkins.scm.api.trait.SCMSourceTrait;
+import jenkins.scm.api.trait.SCMSourceTraitDescriptor;
 import jenkins.scm.impl.ChangeRequestSCMHeadCategory;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSourceContext;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSourceRequest;
@@ -75,6 +79,7 @@ public abstract class BaseGithubExtendedFilterTrait extends SCMSourceTrait {
 	protected List<String> getLabelsAsList() {
 		if (labelsAsList == null) {
 			labelsAsList = Optional.ofNullable(getLabels())
+					.filter(StringUtils::isNoneEmpty)
 					.map(labels -> labels.split("\\s*,\\s*"))
 					.map(Arrays::asList)
 					.orElse(Collections.emptyList());
@@ -103,24 +108,24 @@ public abstract class BaseGithubExtendedFilterTrait extends SCMSourceTrait {
 
 	protected List<String> getPullRequestLabels(@NonNull GitHubSCMSourceRequest githubRequest, @NonNull PullRequestSCMHead pullRequestSCMHead) {
 		return StreamSupport.stream(githubRequest.getPullRequests().spliterator(), false)
-									.filter(ghPullRequest -> ghPullRequest.getNumber() == pullRequestSCMHead.getNumber())
-									.findFirst()
-									.map(ghPullRequest -> {
-										List<String> labels = Collections.emptyList();
-										try {
-											labels = ghPullRequest.getLabels().stream().map(GHLabel::getName)
-													.collect(Collectors.toList());
-											if (labels.isEmpty()) {
-												githubRequest.listener().getLogger().format("%n  Found %s. has no labels %n", HyperlinkNote.encodeTo(ghPullRequest.getHtmlUrl().toString(), "#" + ghPullRequest.getNumber()));
-											} else {
-												githubRequest.listener().getLogger().format("%n  Found %s. has labels \"%s\" %n", HyperlinkNote.encodeTo(ghPullRequest.getHtmlUrl().toString(), "#" + ghPullRequest.getNumber()), String.join(",", labels));
-											}
-											return labels;
-										} catch (Exception e) {
-											return labels;
-										}
-									})
-									.orElse(Collections.emptyList());
+				.filter(ghPullRequest -> ghPullRequest.getNumber() == pullRequestSCMHead.getNumber())
+				.findFirst()
+				.map(ghPullRequest -> {
+					List<String> labels = Collections.emptyList();
+					try {
+						labels = ghPullRequest.getLabels().stream().map(GHLabel::getName)
+								.collect(Collectors.toList());
+						if (labels.isEmpty()) {
+							githubRequest.listener().getLogger().format("%n  Found %s. has no labels %n", HyperlinkNote.encodeTo(ghPullRequest.getHtmlUrl().toString(), "#" + ghPullRequest.getNumber()));
+						} else {
+							githubRequest.listener().getLogger().format("%n  Found %s. has labels \"%s\" %n", HyperlinkNote.encodeTo(ghPullRequest.getHtmlUrl().toString(), "#" + ghPullRequest.getNumber()), String.join(",", labels));
+						}
+						return labels;
+					} catch (Exception e) {
+						return labels;
+					}
+				})
+				.orElse(Collections.emptyList());
 	}
 
 	public static abstract class BaseDescriptorImpl extends SCMSourceTraitDescriptor {
