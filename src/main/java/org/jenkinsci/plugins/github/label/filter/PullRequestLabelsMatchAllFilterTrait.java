@@ -87,7 +87,7 @@ public class PullRequestLabelsMatchAllFilterTrait extends BaseGithubExtendedFilt
 		 */
 		@Override
 		public String getDisplayName() {
-			return "Filter pull requests matching all labels";
+			return "Filter pull requests with all specified labels";
 		}
 
 	}
