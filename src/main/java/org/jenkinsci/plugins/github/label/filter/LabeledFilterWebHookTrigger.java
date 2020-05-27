@@ -31,7 +31,7 @@ public class LabeledFilterWebHookTrigger extends Trigger {
 		 * {@inheritDoc}
 		 */
 		public String getDisplayName() {
-			return "Scan by labeled/unlabeled github webhook";
+			return "Scan by labeled/unlabeled github webhook events";
 		}
 	}
 }

@@ -94,7 +94,7 @@ public class PullRequestLabelsBlackListFilterTrait extends BaseGithubExtendedFil
 		 */
 		@Override
 		public String getDisplayName() {
-			return "Filter pull requests OUT matching any labels";
+			return "Exclude pull requests with any specified labels";
 		}
 
 	}

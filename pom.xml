@@ -27,8 +27,8 @@
     </properties>
 
     <name>Github label filter plugin</name>
-    <description>Filter or blacklist multibranch Github Pull Requests by labels</description>
-
+    <description>Filter or xclude multibranch Github Pull Requests by labels</description>
+    <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
     <!-- The default licence for Jenkins OSS Plugins is MIT. Substitute for the applicable one if needed. -->
 
     <licenses>
