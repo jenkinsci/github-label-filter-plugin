@@ -9,7 +9,6 @@ It provides filters for:
  - Exclude pull requests with any specified labels.
    - The pull requests will be excluded which having any labels.
    
-Since it's only possible to create or delete the pull request job can created or deleted when create or delete the Github pull request,
-to auto create or delete the jobs, this plugin adds a new option to "Scan by labeled/unlabeled github webhook events".  
-After enable this one, labeling or unlabeling a PR on the github repository triggers a scanning job.
+This plugin adds a new "Scan by labeled/unlabeled github webhook events" option.  
+After enable this one, labeling or unlabeling a PR on the github repository triggers a scanning job again.
  
