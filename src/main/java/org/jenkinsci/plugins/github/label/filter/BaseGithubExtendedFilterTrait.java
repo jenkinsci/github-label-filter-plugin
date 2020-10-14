@@ -41,8 +41,10 @@ import org.jenkinsci.plugins.github_branch_source.PullRequestSCMHead;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.github.GHLabel;
+import org.kohsuke.github.GHPullRequest;
 import org.kohsuke.stapler.QueryParameter;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -106,26 +108,23 @@ public abstract class BaseGithubExtendedFilterTrait extends SCMSourceTrait {
 		return category instanceof ChangeRequestSCMHeadCategory;
 	}
 
-	protected List<String> getPullRequestLabels(@NonNull GitHubSCMSourceRequest githubRequest, @NonNull PullRequestSCMHead pullRequestSCMHead) {
-		return StreamSupport.stream(githubRequest.getPullRequests().spliterator(), false)
-				.filter(ghPullRequest -> ghPullRequest.getNumber() == pullRequestSCMHead.getNumber())
-				.findFirst()
-				.map(ghPullRequest -> {
-					List<String> labels = Collections.emptyList();
-					try {
-						labels = ghPullRequest.getLabels().stream().map(GHLabel::getName)
-								.collect(Collectors.toList());
-						if (labels.isEmpty()) {
-							githubRequest.listener().getLogger().format("%n  Found %s. has no labels %n", HyperlinkNote.encodeTo(ghPullRequest.getHtmlUrl().toString(), "#" + ghPullRequest.getNumber()));
-						} else {
-							githubRequest.listener().getLogger().format("%n  Found %s. has labels \"%s\" %n", HyperlinkNote.encodeTo(ghPullRequest.getHtmlUrl().toString(), "#" + ghPullRequest.getNumber()), String.join(",", labels));
-						}
-						return labels;
-					} catch (Exception e) {
-						return labels;
-					}
-				})
-				.orElse(Collections.emptyList());
+	protected List<String> getPullRequestLabels(@NonNull GitHubSCMSourceRequest githubRequest, @NonNull PullRequestSCMHead pullRequestSCMHead) throws IOException {
+        Optional<GHPullRequest> pr = StreamSupport.stream(githubRequest.getPullRequests().spliterator(), false)
+                .filter(ghPullRequest -> ghPullRequest.getNumber() == pullRequestSCMHead.getNumber())
+                .findFirst();
+        if (pr.isPresent()) {
+            GHPullRequest ghPullRequest = pr.get();
+            List<String> labels = ghPullRequest.getLabels().stream().map(GHLabel::getName)
+                    .collect(Collectors.toList());
+            if (labels.isEmpty()) {
+                githubRequest.listener().getLogger().format("%n  Found %s. has no labels %n", HyperlinkNote.encodeTo(ghPullRequest.getHtmlUrl().toString(), "#" + ghPullRequest.getNumber()));
+            } else {
+                githubRequest.listener().getLogger().format("%n  Found %s. has labels \"%s\" %n", HyperlinkNote.encodeTo(ghPullRequest.getHtmlUrl().toString(), "#" + ghPullRequest.getNumber()), String.join(",", labels));
+            }
+            return labels;
+        } else {
+            return Collections.emptyList();
+        }
 	}
 
 	public static abstract class BaseDescriptorImpl extends SCMSourceTraitDescriptor {
