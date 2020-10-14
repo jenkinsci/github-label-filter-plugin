@@ -25,6 +25,7 @@ package org.jenkinsci.plugins.github.label.filter;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
+import java.io.IOException;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.trait.SCMHeadFilter;
 import jenkins.scm.api.trait.SCMSourceRequest;
@@ -54,7 +55,7 @@ public class PullRequestLabelsMatchAllFilterTrait extends BaseGithubExtendedFilt
 		SCMHeadFilter scmHeadFilter = new SCMHeadFilter() {
 
 			@Override
-			public boolean isExcluded(@NonNull SCMSourceRequest request, @NonNull SCMHead head) {
+			public boolean isExcluded(@NonNull SCMSourceRequest request, @NonNull SCMHead head) throws IOException {
 				if (request instanceof GitHubSCMSourceRequest && head instanceof PullRequestSCMHead) {
 					List<String> foundLabels = getPullRequestLabels((GitHubSCMSourceRequest) request, (PullRequestSCMHead) head);
 					List<String> requiredLabels = getLabelsAsList();
