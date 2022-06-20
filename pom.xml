@@ -24,7 +24,7 @@
         <github-branch-source.version>2.2.0</github-branch-source.version>
         <java.level>8</java.level>
         <jenkins-test-harness.version>2.34</jenkins-test-harness.version>
-        <workflow.version>1.14.2</workflow.version>
+        <workflow.version>707.v71c3f0a_6ccdb_</workflow.version>
         <assertj.version>3.16.1</assertj.version>
     </properties>
 
