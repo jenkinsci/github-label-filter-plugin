@@ -21,7 +21,7 @@
         <gitHubRepo>jenkinsci/github-label-filter-plugin</gitHubRepo>
         <!-- Baseline Jenkins version you use to build the plugin. Users must have this version or newer to run. -->
         <jenkins.version>2.164.3</jenkins.version>
-        <github-branch-source.version>2.2.0</github-branch-source.version>
+        <github-branch-source.version>2.3.5</github-branch-source.version>
         <java.level>8</java.level>
         <jenkins-test-harness.version>2.34</jenkins-test-harness.version>
         <workflow.version>1.14.2</workflow.version>
