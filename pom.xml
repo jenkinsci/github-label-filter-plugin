@@ -28,7 +28,7 @@
         <assertj.version>3.16.1</assertj.version>
     </properties>
 
-    <name>Github label filter plugin</name>
+    <name>GitHub Label Filter</name>
     <description>Filter or xclude multibranch Github Pull Requests by labels</description>
     <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
     <!-- The default licence for Jenkins OSS Plugins is MIT. Substitute for the applicable one if needed. -->
